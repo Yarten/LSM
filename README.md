@@ -18,7 +18,7 @@ LSM驱动部分是一个可执行程序，可随系统启动而启动；LSM客�
 
 LSM运作时整体结构如下图所示：
 
-![system overview](./image/system overview.png)
+![system overview](image/system overview.png)
 
 其中，黑色无箭头实线代表着 **连接（Connection）**，黑色有箭头实线代表着 **竞争读写接口（Race IO）**，虚线圆圈代表着 **逻辑内存区域（Logical Memory Block）**，虚线圆圈中的每个图形都代表着**内存区域（Memory Block）**。
 
@@ -40,7 +40,7 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 该步骤的流程如下图所示：
 
-![race in](./image/race in.png)
+![race in](image/race in.png)
 
 在该步骤中，最为关键的部分是，如何为客户端分配唯一的X。不难想象到，每一个应用程序而言，可以以PID作为其唯一标识，而在一个程序内，每一个客户端实例可以由客户端的一个全局静态计数器再进行区分。总而言之，全局唯一的条件是可以达到的。
 
@@ -70,7 +70,7 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 
 
-![data exchange](./image/data exchange.png)
+![data exchange](image/data exchange.png)
 
 每一个连接均维护着两个监听线程，分别监听recv字段与data字段的更新，send字段的使用发生在recv字段的回复，或者是用户线程的行为调用，data字段的发送发生在用户线程，而接收则以回调的形式通知用户。字段的读写操作均是同步的。
 
@@ -78,7 +78,7 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 连接的监听逻辑设计如下图所示：
 
-![connection](./image/connection.png)
+![connection](image/connection.png)
 
 其中，ping作为keep alive机制的控制报文，用以探测该连接是否有人使用，它的ack回复是自动的。图中与data相关的部分逻辑使用虚线箭头，表示该逻辑嫁接在recv线程中得以实现。该连接维护的逻辑中，共有三个回调接口，分别是：
 
@@ -91,4 +91,14 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 
 ### 6. 程序设计
+
+LSM依赖Boost.Interprocess，目前仅在Ubuntu下试验过，代码开源在：https://github.com/Yarten/LSM，欢迎各位下载使用，并且再次开发，以及提供宝贵的改进意见。
+
+代码的设计基本分为5个逻辑部分：
+
+- kernel：核心部分，包括内存操作的基本类，若之后改换其他共享内存操作库，改变最多便是该模块；
+- component：组件部分，包括着LSM管理机制所需要的所有类，二次开发LSM协议便是该部分的工作；
+- server：服务端，或驱动端的实现，该部分产生一个可执行文件；
+- client：客户端，用于连接驱动、数据交换等操作，给应用程序使用LSM的接口；
+- utils：其他一些常用工具函数；
 
