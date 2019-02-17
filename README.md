@@ -18,7 +18,7 @@ LSM驱动部分是一个可执行程序，可随系统启动而启动；LSM客�
 
 LSM运作时整体结构如下图所示：
 
-![system overview](image/system overview.png)
+![system overview](image/system_overview.png)
 
 其中，黑色无箭头实线代表着 **连接（Connection）**，黑色有箭头实线代表着 **竞争读写接口（Race IO）**，虚线圆圈代表着 **逻辑内存区域（Logical Memory Block）**，虚线圆圈中的每个图形都代表着**内存区域（Memory Block）**。
 
@@ -40,7 +40,7 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 该步骤的流程如下图所示：
 
-![race in](image/race in.png)
+![race in](image/race_in.png)
 
 在该步骤中，最为关键的部分是，如何为客户端分配唯一的X。不难想象到，每一个应用程序而言，可以以PID作为其唯一标识，而在一个程序内，每一个客户端实例可以由客户端的一个全局静态计数器再进行区分。总而言之，全局唯一的条件是可以达到的。
 
@@ -70,7 +70,7 @@ LSM作为一个C/S模型的系统，在驱动端总会有一个公共的接入�
 
 
 
-![data exchange](image/data exchange.png)
+![data exchange](image/data_exchange.png)
 
 每一个连接均维护着两个监听线程，分别监听recv字段与data字段的更新，send字段的使用发生在recv字段的回复，或者是用户线程的行为调用，data字段的发送发生在用户线程，而接收则以回调的形式通知用户。字段的读写操作均是同步的。
 
